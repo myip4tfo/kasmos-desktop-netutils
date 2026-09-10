@@ -1,5 +1,8 @@
 FROM kasmweb/kasmos-desktop:1.19.0-rolling-weekly
 
+ARG UPSTREAM_DIGEST=unknown
+LABEL org.opencontainers.image.base.digest=$UPSTREAM_DIGEST
+
 USER root
 
 # Install networking utilities
