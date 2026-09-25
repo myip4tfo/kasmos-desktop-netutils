@@ -9,7 +9,8 @@ USER root
 # Install networking utilities, plus gvfs (smb://, sftp:// support in Files)
 # and a couple extra apps (Kate, Konsole).
 # Also agent/jump-box tooling: sshpass/expect/tmux, jq, fd, L2/SNMP/SMB/LDAP
-# clients, serial console, plus the GitHub CLI (apt repo), yq and tea (binaries).
+# clients, serial console, shell/YAML linters, plus the GitHub CLI (apt repo),
+# yq, tea and hadolint (binaries).
 # wireshark-common's postinst asks (via debconf) whether non-root users may
 # capture packets; pre-seed "yes" so the install stays non-interactive, then
 # add kasm-user to the wireshark group so captures work without sudo in the GUI.
@@ -60,6 +61,17 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     tree \
     nftables \
     python3-pip \
+    pipx \
+    python3-requests \
+    shellcheck \
+    shfmt \
+    yamllint \
+    bc \
+    xxd \
+    dos2unix \
+    moreutils \
+    parallel \
+    gawk \
     && ln -s /usr/bin/fdfind /usr/local/bin/fd \
     && usermod -aG wireshark kasm-user \
     && rm -rf /var/lib/apt/lists/*
@@ -73,13 +85,16 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && apt-get install -y gh && \
     rm -rf /var/lib/apt/lists/*
 
-# yq (mikefarah) and tea (Gitea CLI) as static binaries, latest release at build time.
+# yq (mikefarah), tea (Gitea CLI) and hadolint as static binaries, latest release at build time.
 RUN curl -fsSL -o /usr/local/bin/yq \
       "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH}" && \
     TEA_VERSION="$(curl -fsSL https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -er .tag_name | sed 's/^v//')" && \
     curl -fsSL -o /usr/local/bin/tea \
       "https://dl.gitea.com/tea/${TEA_VERSION}/tea-${TEA_VERSION}-linux-${TARGETARCH}" && \
-    chmod 0755 /usr/local/bin/yq /usr/local/bin/tea && \
-    yq --version && tea --version
+    HADOLINT_ARCH="$([ "${TARGETARCH}" = "amd64" ] && echo x86_64 || echo "${TARGETARCH}")" && \
+    curl -fsSL -o /usr/local/bin/hadolint \
+      "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-${HADOLINT_ARCH}" && \
+    chmod 0755 /usr/local/bin/yq /usr/local/bin/tea /usr/local/bin/hadolint && \
+    yq --version && tea --version && hadolint --version
 
 USER 1000
