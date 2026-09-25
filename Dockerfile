@@ -75,7 +75,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     firefox-esr \
     ark \
     gwenview \
-    spectacle \
+    kde-spectacle \
     kcalc \
     xsel \
     wmctrl \
