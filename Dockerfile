@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.base.digest=$UPSTREAM_DIGEST
 USER root
 
 # Install networking utilities, plus gvfs (smb://, sftp:// support in Files)
-# and a couple extra apps (Kate, Konsole).
+# and a couple extra apps (Kate, Konsole, Firefox, Ark, Gwenview, Spectacle, KCalc).
 # Also agent/jump-box tooling: sshpass/expect/tmux, jq, fd, L2/SNMP/SMB/LDAP
 # clients, serial console, shell/YAML linters, plus the GitHub CLI (apt repo),
 # yq, tea and hadolint (binaries).
@@ -72,6 +72,14 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     moreutils \
     parallel \
     gawk \
+    firefox-esr \
+    ark \
+    gwenview \
+    spectacle \
+    kcalc \
+    xsel \
+    wmctrl \
+    imagemagick \
     && ln -s /usr/bin/fdfind /usr/local/bin/fd \
     && usermod -aG wireshark kasm-user \
     && rm -rf /var/lib/apt/lists/*
